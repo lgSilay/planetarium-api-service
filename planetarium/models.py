@@ -28,6 +28,9 @@ class AstronomyShow(models.Model):
     description = models.TextField
     show_theme = models.ManyToManyField(ShowTheme)
 
+    class Meta:
+        ordering = ["title"]
+
     def __str__(self):
         return self.title
 
