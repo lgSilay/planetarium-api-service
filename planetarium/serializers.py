@@ -17,7 +17,7 @@ class ShowThemeSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
-class PlanetariumDomeSerializers(serializers.ModelSerializer):
+class PlanetariumDomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanetariumDome
         fields = ("id", "name", "rows", "seats_in_row", "capacity")
@@ -65,7 +65,7 @@ class ShowSessionSerializer(serializers.ModelSerializer):
 
 
 class ShowSessionListSerializer(ShowSessionSerializer):
-    astronomy_show = serializers.CharField(source="astronomyshow.title", read_only=True)
+    astronomy_show = serializers.CharField(source="astronomy_show.title", read_only=True)
     planetarium_dome_name = serializers.CharField(
         source="planetarium_dome.name", read_only=True
     )
@@ -111,7 +111,7 @@ class TicketSeatsSerializer(TicketSerializer):
 
 class ShowSessionDetailSerializer(ShowSessionSerializer):
     movie = AstronomyShowListSerializer(many=False, read_only=True)
-    cinema_hall = PlanetariumDomeSerializers(many=False, read_only=True)
+    cinema_hall = PlanetariumDomeSerializer(many=False, read_only=True)
     taken_places = TicketSeatsSerializer(
         source="tickets", many=True, read_only=True
     )
@@ -137,5 +137,5 @@ class ReservationSerializer(serializers.ModelSerializer):
             return reservation
 
 
-class OrderListSerializer(ReservationSerializer):
+class ReservationListSerializer(ReservationSerializer):
     tickets = TicketListSerializer(many=True, read_only=True)

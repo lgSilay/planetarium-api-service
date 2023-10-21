@@ -52,7 +52,7 @@ class PlanetariumDomeViewSet(
 
 
 class AstronomyShowViewSet(
-    # ReadOnlyModelViewSet,
+    ReadOnlyModelViewSet,
     mixins.CreateModelMixin,
     GenericViewSet,
 ):
@@ -68,17 +68,17 @@ class AstronomyShowViewSet(
 
     def get_queryset(self):
         """Retrieve the movies with filters"""
-        # title = self.request.query_params.get("title")
-        # show_theme = self.request.query_params.get("show_theme")
+        title = self.request.query_params.get("title")
+        show_theme = self.request.query_params.get("show_theme")
 
         queryset = self.queryset
 
-        # if title:
-        #     queryset = queryset.filter(title__icontains=title)
-        #
-        # if show_theme:
-        #     genres_ids = self._params_to_ints(show_theme)
-        #     queryset = queryset.filter(show_theme__id__in=genres_ids)
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+
+        if show_theme:
+            show_theme_ids = self._params_to_ints(show_theme)
+            queryset = queryset.filter(show_theme__id__in=show_theme_ids)
 
         return queryset.distinct()
 
@@ -95,13 +95,13 @@ class AstronomyShowViewSet(
 class ShowSessionViewSet(viewsets.ModelViewSet):
     queryset = (
         ShowSession.objects.all()
-        # .select_related("movie", "cinema_hall")
-        # .annotate(
-        #     tickets_available=(
-        #         F("cinema_hall__rows") * F("cinema_hall__seats_in_row")
-        #         - Count("tickets")
-        #     )
-        # )
+        .select_related("astronomy_show", "planetarium_dome")
+        .annotate(
+            tickets_available=(
+                F("planetarium_dome__rows") * F("planetarium_dome__seats_in_row")
+                - Count("tickets")
+            )
+        )
     )
     serializer_class = ShowSessionSerializer
     authentication_classes = (TokenAuthentication,)
@@ -143,7 +143,8 @@ class ReservationViewSet(
     GenericViewSet,
 ):
     queryset = Reservation.objects.prefetch_related(
-        "tickets__movie_session__movie", "tickets__movie_session__cinema_hall"
+        "tickets__show_session__astronomy_show",
+        "tickets__show_session__planetarium_dome",
     )
     serializer_class = ReservationSerializer
     pagination_class = ReservationPagination
