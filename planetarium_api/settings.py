@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "rest_framework.authtoken",
     "drf_spectacular",
     "planetarium",
     "user",
@@ -127,6 +126,9 @@ REST_FRAMEWORK = {
         "anon": "10/minute",
         "user": "30/minute"
     },
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
 }
 
 SPECTACULAR_SETTINGS = {
@@ -134,5 +136,4 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Order tickets for planetarium',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    # OTHER SETTINGS
 }
