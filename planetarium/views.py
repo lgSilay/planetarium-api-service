@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from django.db.models import F, Count
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
@@ -67,7 +69,7 @@ class AstronomyShowViewSet(
         return [int(str_id) for str_id in qs.split(",")]
 
     def get_queryset(self):
-        """Retrieve the movies with filters"""
+        """Retrieve the AstronomyShow with filters"""
         title = self.request.query_params.get("title")
         show_theme = self.request.query_params.get("show_theme")
 
@@ -91,6 +93,23 @@ class AstronomyShowViewSet(
 
         return AstronomyShowSerializer
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "title",
+                type=str,
+                description="Filter AstronomyShow by title"
+            ),
+            OpenApiParameter(
+                "show_theme",
+                type={"type": "list", "items": {"type": "number"}},
+                description="Filter AstronomyShow by show_theme id"
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class ShowSessionViewSet(viewsets.ModelViewSet):
     queryset = (
@@ -109,7 +128,7 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         date = self.request.query_params.get("date")
-        astronomy_show_id_str = self.request.query_params.get("movie")
+        astronomy_show_id_str = self.request.query_params.get("astronomy_show")
 
         queryset = self.queryset
 
@@ -130,6 +149,23 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
             return ShowSessionDetailSerializer
 
         return ShowSessionSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "astronomy_show",
+                type={"type": "list", "items": {"type": "number"}},
+                description="Filter AstronomyShow by astronomy_show id"
+            ),
+            OpenApiParameter(
+                "date",
+                type=OpenApiTypes.DATE,
+                description="Filter AstronomyShow session by date"
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class ReservationPagination(PageNumberPagination):
