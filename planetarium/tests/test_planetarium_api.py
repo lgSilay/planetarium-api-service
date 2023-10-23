@@ -6,7 +6,10 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from planetarium.models import AstronomyShow, ShowTheme
-from planetarium.serializers import AstronomyShowListSerializer, AstronomyShowDetailSerializer
+from planetarium.serializers import (
+    AstronomyShowListSerializer,
+    AstronomyShowDetailSerializer,
+)
 
 ASTRONOMY_SHOW_URL = reverse("planetarium:astronomyshow-list")
 
@@ -123,9 +126,7 @@ class AdminAstronomyShowApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
-            "test_admin@test.com",
-            "secretAdminPass",
-            is_staff=True
+            "test_admin@test.com", "secretAdminPass", is_staff=True
         )
         self.client.force_authenticate(self.user)
 
